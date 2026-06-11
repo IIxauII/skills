@@ -52,8 +52,8 @@ touch "$RC"
 # $HOME-relative literal so the snippet stays portable inside the rc.
 DIR_LITERAL="\$HOME${DIR#$HOME}"
 
-START="# >>> claude-account-switch: ${STRATEGY} trigger (${LABEL}) >>>"
-END="# <<< claude-account-switch: ${STRATEGY} trigger (${LABEL}) <<<"
+START="# >>> cc-account-switch: ${STRATEGY} trigger (${LABEL}) >>>"
+END="# <<< cc-account-switch: ${STRATEGY} trigger (${LABEL}) <<<"
 
 if grep -qF "$START" "$RC"; then
   echo "trigger already present in $RC ($STRATEGY/$LABEL) — nothing to do."

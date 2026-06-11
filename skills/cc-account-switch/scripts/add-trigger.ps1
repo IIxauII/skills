@@ -31,8 +31,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 if (-not (Test-Path $Rc)) { New-Item -ItemType File -Force -Path $Rc | Out-Null }
-$start = "# >>> claude-account-switch: $Strategy trigger ($Label) >>>"
-$end   = "# <<< claude-account-switch: $Strategy trigger ($Label) <<<"
+$start = "# >>> cc-account-switch: $Strategy trigger ($Label) >>>"
+$end   = "# <<< cc-account-switch: $Strategy trigger ($Label) <<<"
 
 if ((Get-Content $Rc -Raw -ErrorAction SilentlyContinue) -match [regex]::Escape($start)) {
   Write-Host "trigger already present in $Rc ($Strategy/$Label) — nothing to do."; exit 0

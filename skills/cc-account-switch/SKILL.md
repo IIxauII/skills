@@ -1,5 +1,5 @@
 ---
-name: claude-account-switch
+name: cc-account-switch
 description: Set up and manage multiple Claude Code accounts (e.g. personal + business) on one machine using CLAUDE_CONFIG_DIR — fully isolated auth with shared settings/skills/hooks via symlinks, an auto-switch trigger (terminal / directory / alias / per-project .env), and a status line that shows the active account email. Cross-platform (macOS, Linux, Windows). Use when the user wants to run two accounts side by side, switch accounts without logging out, dedicate a terminal/dir to a work account, or show which account a session is billing against.
 ---
 
@@ -109,8 +109,10 @@ credential orphaned (harmless). To remove it too, either run
 `--keychain-hash <hash>` (finding the hash: `reference/mechanics.md`).
 
 **Caveat:** `remove-profile` only removes blocks added via the skill's marker
-comments (`# >>> claude-account-switch: ... >>>`). Trigger/account lines added
-by hand use different comments — remove those manually.
+comments (`# >>> cc-account-switch: ... >>>`, plus legacy
+`# >>> claude-account-switch: ... >>>` blocks from before the skill was
+renamed). Trigger/account lines added by hand use different comments — remove
+those manually.
 
 ## References
 

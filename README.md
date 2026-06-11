@@ -1,4 +1,4 @@
-# claude-skills
+# skills
 
 A collection of [Agent Skills](https://www.skills.sh/) for Claude Code.
 
@@ -7,13 +7,13 @@ A collection of [Agent Skills](https://www.skills.sh/) for Claude Code.
 Install any skill in this repo with the [`skills`](https://github.com/vercel-labs/skills) CLI:
 
 ```bash
-npx skills add IIxauII/claude-skills
+npx skills add IIxauII/skills
 ```
 
 Or pull a single skill:
 
 ```bash
-npx skills add IIxauII/claude-skills/skills/claude-account-switch
+npx skills add IIxauII/skills --skill cc-account-switch
 ```
 
 `npx skills` drops the skill into your agent's skills directory (e.g. `~/.claude/skills/`).
@@ -22,7 +22,7 @@ npx skills add IIxauII/claude-skills/skills/claude-account-switch
 
 | Skill | What it does |
 |-------|--------------|
-| [`claude-account-switch`](skills/claude-account-switch) | Run multiple Claude Code accounts on one machine, fully isolated, via `CLAUDE_CONFIG_DIR` — shared settings/skills/hooks through symlinks, an auto-switch trigger (terminal / directory / alias / per-project `.env`), and a status line showing the active account email. Cross-platform (macOS, Linux, Windows). |
+| [`cc-account-switch`](skills/cc-account-switch) | Run multiple Claude Code accounts on one machine, fully isolated, via `CLAUDE_CONFIG_DIR` — shared settings/skills/hooks through symlinks, an auto-switch trigger (terminal / directory / alias / per-project `.env`), and a status line showing the active account email. Cross-platform (macOS, Linux, Windows). |
 
 ## Repo layout
 

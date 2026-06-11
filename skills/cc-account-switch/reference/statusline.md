@@ -54,9 +54,9 @@ The installer inspects `settings.json` → `statusLine`:
 
 Marker comments used for idempotent injection:
 ```
-# >>> claude-account-switch: account line >>>
+# >>> cc-account-switch: account line >>>
 ...
-# <<< claude-account-switch: account line <<<
+# <<< cc-account-switch: account line <<<
 ```
 
 ## PowerShell account line

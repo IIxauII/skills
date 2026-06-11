@@ -28,18 +28,18 @@ Detect the terminal via an env var the emulator sets:
 
 **zsh/bash** (`~/.zshrc` or `~/.bashrc`):
 ```bash
-# >>> claude-account-switch: terminal trigger (work) >>>
+# >>> cc-account-switch: terminal trigger (work) >>>
 if [ "$TERM_PROGRAM" = "ghostty" ]; then
   export CLAUDE_CONFIG_DIR="$HOME/.claude-work"
 fi
-# <<< claude-account-switch: terminal trigger (work) <<<
+# <<< cc-account-switch: terminal trigger (work) <<<
 ```
 
 **PowerShell** (`$PROFILE`):
 ```powershell
-# >>> claude-account-switch: terminal trigger (work) >>>
+# >>> cc-account-switch: terminal trigger (work) >>>
 if ($env:WT_SESSION) { $env:CLAUDE_CONFIG_DIR = "$HOME\.claude-work" }
-# <<< claude-account-switch: terminal trigger (work) <<<
+# <<< cc-account-switch: terminal trigger (work) <<<
 ```
 
 ---
@@ -50,7 +50,7 @@ Account follows a path subtree. Works in any terminal.
 
 **zsh** — `chpwd` hook (`~/.zshrc`):
 ```bash
-# >>> claude-account-switch: directory trigger (work) >>>
+# >>> cc-account-switch: directory trigger (work) >>>
 _cas_work_dir="$HOME/work"
 _cas_apply_profile() {
   case "$PWD/" in
@@ -61,12 +61,12 @@ _cas_apply_profile() {
 autoload -Uz add-zsh-hook
 add-zsh-hook chpwd _cas_apply_profile
 _cas_apply_profile   # run for the initial dir
-# <<< claude-account-switch: directory trigger (work) <<<
+# <<< cc-account-switch: directory trigger (work) <<<
 ```
 
 **bash** — `PROMPT_COMMAND` (`~/.bashrc`):
 ```bash
-# >>> claude-account-switch: directory trigger (work) >>>
+# >>> cc-account-switch: directory trigger (work) >>>
 _cas_apply_profile() {
   case "$PWD/" in
     "$HOME/work"/*) export CLAUDE_CONFIG_DIR="$HOME/.claude-work" ;;
@@ -74,18 +74,18 @@ _cas_apply_profile() {
   esac
 }
 case "$PROMPT_COMMAND" in *_cas_apply_profile*) ;; *) PROMPT_COMMAND="_cas_apply_profile;${PROMPT_COMMAND}" ;; esac
-# <<< claude-account-switch: directory trigger (work) <<<
+# <<< cc-account-switch: directory trigger (work) <<<
 ```
 
 **PowerShell** — prompt function hook (`$PROFILE`):
 ```powershell
-# >>> claude-account-switch: directory trigger (work) >>>
+# >>> cc-account-switch: directory trigger (work) >>>
 $function:prompt = {
   if ($PWD.Path -like "$HOME\work*") { $env:CLAUDE_CONFIG_DIR = "$HOME\.claude-work" }
   else { Remove-Item Env:CLAUDE_CONFIG_DIR -ErrorAction SilentlyContinue }
   "PS $($PWD.Path)> "
 }
-# <<< claude-account-switch: directory trigger (work) <<<
+# <<< cc-account-switch: directory trigger (work) <<<
 ```
 (If a custom prompt already exists, merge the env logic into it instead.)
 
@@ -98,16 +98,16 @@ account, `claude` for the default.
 
 **zsh/bash**:
 ```bash
-# >>> claude-account-switch: alias trigger (work) >>>
+# >>> cc-account-switch: alias trigger (work) >>>
 claude-work() { CLAUDE_CONFIG_DIR="$HOME/.claude-work" claude "$@"; }
-# <<< claude-account-switch: alias trigger (work) <<<
+# <<< cc-account-switch: alias trigger (work) <<<
 ```
 
 **PowerShell**:
 ```powershell
-# >>> claude-account-switch: alias trigger (work) >>>
+# >>> cc-account-switch: alias trigger (work) >>>
 function claude-work { $env:CLAUDE_CONFIG_DIR = "$HOME\.claude-work"; claude @args }
-# <<< claude-account-switch: alias trigger (work) <<<
+# <<< cc-account-switch: alias trigger (work) <<<
 ```
 
 ---

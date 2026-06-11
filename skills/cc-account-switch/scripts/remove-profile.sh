@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# remove-profile.sh — tear down a profile created by claude-account-switch.
+# remove-profile.sh — tear down a profile created by cc-account-switch.
 # Reverses create-profile + add-trigger + install-statusline. Idempotent.
 # Backs up every file it edits. Refuses to touch the primary (~/.claude) dir.
 #
@@ -20,7 +20,7 @@
 #   --help
 #
 # What it removes:
-#   1. Guarded blocks "# >>> claude-account-switch: ... >>>" from the rc file (triggers).
+#   1. Guarded blocks "# >>> cc-account-switch: ... >>>" from the rc file (triggers).
 #   2. The "account line" guarded block from the status-line script.
 #   3. The profile config dir (only with --yes) — this includes that account's
 #      .claude.json, sessions, projects, history. Auth in the macOS keychain is
@@ -74,18 +74,19 @@ run() { if [ "$DRY" = 1 ]; then echo "[dry-run] $*"; else eval "$*"; fi; }
 strip_blocks() {
   file="$1"; label="$2"
   [ -f "$file" ] || { echo "  $label: $file not found, skip"; return; }
-  if ! grep -q '^# >>> claude-account-switch:' "$file"; then
+  # Also match legacy blocks written before the skill was renamed from claude-account-switch.
+  if ! grep -qE '^# >>> (cc|claude)-account-switch:' "$file"; then
     echo "  $label: no skill blocks in $file"; return
   fi
   if [ "$DRY" = 1 ]; then
-    echo "[dry-run] would strip claude-account-switch blocks from $file"; return
+    echo "[dry-run] would strip cc-account-switch blocks from $file"; return
   fi
   cp "$file" "$file.bak"
   tmp=$(mktemp)
   awk '
-    /^# >>> claude-account-switch:/ {skip=1}
+    /^# >>> (cc|claude)-account-switch:/ {skip=1}
     !skip {print}
-    /^# <<< claude-account-switch:/ {skip=0}
+    /^# <<< (cc|claude)-account-switch:/ {skip=0}
   ' "$file" > "$tmp"
   mv "$tmp" "$file"
   echo "  $label: stripped blocks from $file (backup: $file.bak)"

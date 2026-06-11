@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Tear down a profile created by claude-account-switch (Windows/PowerShell).
+  Tear down a profile created by cc-account-switch (Windows/PowerShell).
 .DESCRIPTION
   Reverses create-profile + add-trigger + install-statusline. Idempotent.
   Backs up edited files. Refuses to touch the primary (~\.claude) dir.
@@ -38,15 +38,16 @@ if ($dirAbs -eq $primaryAbs -or $dirAbs -eq [System.IO.Path]::GetFullPath($HOME)
 function Strip-Blocks([string]$file, [string]$label) {
   if (-not (Test-Path $file)) { Write-Host "  ${label}: $file not found, skip"; return }
   $lines = Get-Content $file
-  if (-not ($lines -match '^# >>> claude-account-switch:')) { Write-Host "  ${label}: no skill blocks"; return }
-  if ($DryRun) { Write-Host "[dry-run] would strip claude-account-switch blocks from $file"; return }
+  # Also match legacy blocks written before the skill was renamed from claude-account-switch.
+  if (-not ($lines -match '^# >>> (cc|claude)-account-switch:')) { Write-Host "  ${label}: no skill blocks"; return }
+  if ($DryRun) { Write-Host "[dry-run] would strip cc-account-switch blocks from $file"; return }
   Copy-Item $file "$file.bak" -Force
   $out = New-Object System.Collections.Generic.List[string]
   $skip = $false
   foreach ($l in $lines) {
-    if ($l -match '^# >>> claude-account-switch:') { $skip = $true }
+    if ($l -match '^# >>> (cc|claude)-account-switch:') { $skip = $true }
     if (-not $skip) { $out.Add($l) }
-    if ($l -match '^# <<< claude-account-switch:') { $skip = $false }
+    if ($l -match '^# <<< (cc|claude)-account-switch:') { $skip = $false }
   }
   Set-Content -Path $file -Value $out -Encoding UTF8
   Write-Host "  ${label}: stripped blocks from $file (backup: $file.bak)"
