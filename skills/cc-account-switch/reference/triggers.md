@@ -22,9 +22,15 @@ Bind "this terminal app = this account". **Caveat:** every session in that
 terminal becomes the account — keep another terminal for the other account.
 
 Detect the terminal via an env var the emulator sets:
-- Ghostty / iTerm / Apple Terminal / VS Code → `$TERM_PROGRAM`
-  (`ghostty`, `iTerm.app`, `Apple_Terminal`, `vscode`)
+- Ghostty / iTerm / Apple Terminal / VS Code / WezTerm → `$TERM_PROGRAM`
+  (`ghostty`, `iTerm.app`, `Apple_Terminal`, `vscode`, `WezTerm`)
 - Windows Terminal → `$env:WT_SESSION` (presence)
+
+**Detection limits:** kitty does not set `$TERM_PROGRAM` (it sets
+`$KITTY_WINDOW_ID` — match on that instead) and alacritty sets no marker
+variable at all. tmux rewrites `$TERM_PROGRAM` to `tmux`, so the trigger
+will not fire inside tmux even when the outer terminal matches. For
+tmux/alacritty setups, prefer the directory or alias strategy.
 
 **zsh/bash** (`~/.zshrc` or `~/.bashrc`):
 ```bash

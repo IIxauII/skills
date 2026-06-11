@@ -15,8 +15,8 @@
 #   --label     identifier used in marker comments + default alias name. Default: work
 #   --help
 #
-# NOTE: directory strategy emits the zsh (chpwd) form. For bash, see
-# reference/triggers.md.
+# NOTE: directory strategy emits the zsh (chpwd) or bash (PROMPT_COMMAND)
+# form, chosen from the rc filename. Other shells: see reference/triggers.md.
 set -euo pipefail
 
 DIR=""; STRATEGY=""; MATCH=""; NAME=""; RC=""; LABEL="work"
@@ -40,6 +40,12 @@ DIR="${DIR/#\~/$HOME}"
 
 # Autodetect rc file.
 if [ -z "$RC" ]; then
+  case "$(basename "${SHELL:-}")" in
+    fish|nu|nushell)
+      echo "error: $(basename "$SHELL") is not supported by this script — its rc syntax differs." >&2
+      echo "Add the trigger manually (see reference/triggers.md) or pass --rc for a bash/zsh rc file." >&2
+      exit 2 ;;
+  esac
   if [ -n "${ZSH_VERSION:-}" ] || [ "$(basename "${SHELL:-}")" = "zsh" ]; then
     RC="${ZDOTDIR:-$HOME}/.zshrc"
   else
@@ -49,8 +55,22 @@ fi
 RC="${RC/#\~/$HOME}"
 touch "$RC"
 
+# Shell dialect for shell-specific snippets, derived from the rc filename.
+case "$(basename "$RC")" in
+  *zsh*)  RC_SHELL=zsh ;;
+  *bash*) RC_SHELL=bash ;;
+  *)      RC_SHELL="" ;;
+esac
+
 # $HOME-relative literal so the snippet stays portable inside the rc.
-DIR_LITERAL="\$HOME${DIR#$HOME}"
+# Paths outside $HOME are kept verbatim.
+home_literal() {
+  case "$1" in
+    "$HOME"/*) printf '$HOME%s' "${1#"$HOME"}" ;;
+    *)         printf '%s' "$1" ;;
+  esac
+}
+DIR_LITERAL="$(home_literal "$DIR")"
 
 START="# >>> cc-account-switch: ${STRATEGY} trigger (${LABEL}) >>>"
 END="# <<< cc-account-switch: ${STRATEGY} trigger (${LABEL}) <<<"
@@ -78,8 +98,13 @@ EOF
     ;;
   directory)
     [ -n "$MATCH" ] || { echo "error: directory strategy needs --match (path prefix)" >&2; exit 2; }
+    [ -n "$RC_SHELL" ] || {
+      echo "error: cannot tell if $RC is zsh or bash — the directory snippet is shell-specific." >&2
+      echo "Pass --rc with a recognizable name (*zsh*/*bash*) or add the snippet manually (reference/triggers.md)." >&2
+      exit 2
+    }
     MATCH="${MATCH/#\~/$HOME}"
-    MATCH_LITERAL="\$HOME${MATCH#$HOME}"
+    MATCH_LITERAL="$(home_literal "$MATCH")"
     cat > "$BLOCKFILE" <<EOF
 $START
 _cas_${LABEL}_dir="$MATCH_LITERAL"
@@ -89,10 +114,20 @@ _cas_${LABEL}_apply() {
     *) unset CLAUDE_CONFIG_DIR ;;
   esac
 }
+EOF
+    if [ "$RC_SHELL" = "zsh" ]; then
+      cat >> "$BLOCKFILE" <<EOF
 autoload -Uz add-zsh-hook 2>/dev/null && add-zsh-hook chpwd _cas_${LABEL}_apply
 _cas_${LABEL}_apply
 $END
 EOF
+    else
+      cat >> "$BLOCKFILE" <<EOF
+case "\$PROMPT_COMMAND" in *_cas_${LABEL}_apply*) ;; *) PROMPT_COMMAND="_cas_${LABEL}_apply;\${PROMPT_COMMAND}" ;; esac
+_cas_${LABEL}_apply
+$END
+EOF
+    fi
     ;;
   alias)
     [ -n "$NAME" ] || NAME="claude-${LABEL}"

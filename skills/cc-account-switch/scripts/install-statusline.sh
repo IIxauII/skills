@@ -31,6 +31,15 @@ while [ $# -gt 0 ]; do
 done
 TARGET="${TARGET/#\~/$HOME}"
 SETTINGS="$TARGET/settings.json"
+# If settings.json is a symlink (profile dir sharing the primary's settings),
+# edit the link target instead — replacing the link with a regular file would
+# silently fork the shared config.
+if [ -L "$SETTINGS" ]; then
+  real=$(readlink "$SETTINGS")
+  case "$real" in /*) ;; *) real="$(dirname "$SETTINGS")/$real" ;; esac
+  echo "note: $SETTINGS is a symlink — editing its target $real to keep sharing intact"
+  SETTINGS="$real"
+fi
 HOOKS="$TARGET/hooks"
 mkdir -p "$HOOKS"
 

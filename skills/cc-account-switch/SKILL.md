@@ -37,6 +37,7 @@ Full mechanics + the per-OS auth model + the `~/.claude.json` home-global trap:
 4. **Create the profile** → `scripts/create-profile.{sh,ps1}`.
 5. **Choose a switch trigger** (ask the user; any combination):
    - **terminal** — a terminal app maps to an account (e.g. Ghostty = work).
+     Not reliable under tmux or in kitty/alacritty — see `reference/triggers.md`.
    - **directory** — account follows a path subtree (e.g. `~/work/*`).
    - **alias** — explicit `claude-work` command, zero magic, most portable.
    - **per-project `.env`** — a repo pins itself to an account (direnv).
